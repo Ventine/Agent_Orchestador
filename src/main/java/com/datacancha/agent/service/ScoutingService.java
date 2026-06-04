@@ -6,6 +6,7 @@ import org.springframework.web.client.RestClientException;
 
 import com.datacancha.agent.dto.ApiSportsResponse;
 import com.datacancha.agent.entity.MatchAnalysis;
+import com.datacancha.agent.exception.ScoutingException;
 import com.datacancha.agent.repository.MatchAnalysisRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class ScoutingService {
 
             if (response == null || response.getResponse() == null || response.getResponse().isEmpty()) {
                 log.warn("La API no devolvió datos para el fixture: {}", fixtureId);
-                throw new RuntimeException("No hay datos disponibles para este partido.");
+                throw new ScoutingException("No hay datos disponibles para el partido con ID: " + fixtureId);
             }
 
             // 2. Procesamiento de los datos (Tomamos el primer equipo del array como ejemplo)
@@ -63,7 +64,7 @@ public class ScoutingService {
 
         } catch (RestClientException e) {
             log.error("Error de conexión con API-Sports: {}", e.getMessage());
-            throw new RuntimeException("Fallo en la comunicación con el proveedor de datos.", e);
+            throw new ScoutingException("Fallo en la comunicación con el proveedor de datos estadísticos.", e);
         } catch (Exception e) {
             log.error("Error inesperado procesando el fixture {}: {}", fixtureId, e.getMessage());
             throw e;

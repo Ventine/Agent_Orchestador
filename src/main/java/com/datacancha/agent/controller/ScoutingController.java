@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.datacancha.agent.dto.ApiResponse;
 import com.datacancha.agent.entity.MatchAnalysis;
 import com.datacancha.agent.service.ScoutingService;
 
@@ -18,14 +19,15 @@ public class ScoutingController {
 
     private final ScoutingService scoutingService;
 
-    // Endpoint de prueba: GET http://localhost:8080/api/v1/scouting/fetch/1032894
     @GetMapping("/fetch/{fixtureId}")
-    public ResponseEntity<MatchAnalysis> fetchMatchData(@PathVariable Long fixtureId) {
-        try {
-            MatchAnalysis result = scoutingService.extractAndSaveStatistics(fixtureId);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<ApiResponse<MatchAnalysis>> fetchMatchData(@PathVariable Long fixtureId) {
+        MatchAnalysis result = scoutingService.extractAndSaveStatistics(fixtureId);
+        
+        // Devolvemos la respuesta envuelta en nuestro formato estándar
+        return ResponseEntity.ok(new ApiResponse<>(
+                true, 
+                "Estadísticas extraídas y persistidas correctamente en Supabase.", 
+                result
+        ));
     }
 }
