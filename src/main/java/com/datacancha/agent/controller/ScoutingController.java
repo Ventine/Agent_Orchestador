@@ -3,6 +3,7 @@ package com.datacancha.agent.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +29,19 @@ public class ScoutingController {
                 true, 
                 "Estadísticas extraídas y persistidas correctamente en Supabase.", 
                 result
+        ));
+    }
+
+    // NUEVO MÉTODO: El disparador manual del algoritmo de curación
+    @PostMapping("/trigger-daily")
+    public ResponseEntity<ApiResponse<String>> triggerDailyExtraction() {
+        // Llamamos exactamente a la misma función que usa el Cron Job de las 7 AM
+        scoutingService.extractBestMatchOfTheDay();
+        
+        return ResponseEntity.ok(new ApiResponse<>(
+                true, 
+                "Algoritmo diario ejecutado manualmente. Revisa tu consola y Supabase.", 
+                "Ejecución completada"
         ));
     }
 }
