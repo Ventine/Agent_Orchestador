@@ -1,6 +1,7 @@
 package com.datacancha.agent.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,4 +29,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse<>(false, "Error interno del servidor. Por favor revisa los logs.", null));
     }
+
+    @ExceptionHandler(ApiIntegrationException.class)
+    public ProblemDetail handleApiIntegrationException(ApiIntegrationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+        problemDetail.setTitle("Error de Integración Externa");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail handleResourceNotFoundException(ResourceNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problemDetail.setTitle("Recurso No Encontrado");
+        return problemDetail;
+    }
 }
+
+
